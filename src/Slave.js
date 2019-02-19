@@ -1,26 +1,33 @@
 import React,{Component} from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {
+  Image,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Button,
+  Alert,
+  Linking,
+  Dimensions,
+  LayoutAnimation,
+  StatusBar,
+} from 'react-native';
 import * as firebase from 'firebase'
-class Slave extends Component{
+import { WebBrowser,Constants, Permissions,BarCodeScanner} from 'expo';
+export default class Slave extends Component{
   constructor(props){
     super(props)
-    var config = {
-      apiKey: "AIzaSyDxqDaTcAUR3R6fZwI7PSz5H1yGhVnHHH4",
-      authDomain: "location-72fca.firebaseapp.com",
-      databaseURL: "https://location-72fca.firebaseio.com",
-      projectId: "location-72fca",
-      storageBucket: "location-72fca.appspot.com",
-      messagingSenderId: "440309375391"
-    };
-    firebase.initializeApp(config);
-  }
-  state={
-    competition:null,
-    team:null,
-    player:null,
-    hasCameraPermission: null,
-    Scanned_QR: null,
-  }
+this._requestCameraPermission()
+}
+state={
+  competition:null,
+  team:null,
+  player:null,
+  hasCameraPermission: null,
+  Scanned_QR: null,
+}
   _requestCameraPermission = async () => {
 
 

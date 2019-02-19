@@ -1,39 +1,45 @@
 import React,{Component} from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {
+  Image,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Button,
+  Alert,
+  Linking,
+  Dimensions,
+  LayoutAnimation,
+  StatusBar,
+} from 'react-native';
 import * as firebase from 'firebase'
-
-class Master extends Component{
+import QRCode from 'react-native-qrcode';
+import { WebBrowser,Constants, Permissions} from 'expo';
+export default class Master extends Component {
   constructor(props){
     super(props)
-    var config = {
-      apiKey: "AIzaSyDxqDaTcAUR3R6fZwI7PSz5H1yGhVnHHH4",
-      authDomain: "location-72fca.firebaseapp.com",
-      databaseURL: "https://location-72fca.firebaseio.com",
-      projectId: "location-72fca",
-      storageBucket: "location-72fca.appspot.com",
-      messagingSenderId: "440309375391"
-    };
-    firebase.initializeApp(config);
 
   }
   state={
     competition:"belarus 228",
     team:null,
     player:null,
-    key:1234
+    key:"belarus 228"
   }
-  press(){
+  componentWillMount(){
   firebase.database().ref('users/' + this.state.competition).set({
     is_connected: true
   });
 }
-  
+
   render() {
       return (
         <View style={styles.container}>
         <QRCode
         value={this.state.key}
-        size={400}
+        size={300}
         bgColor='black'
         fgColor='white'/>
         <Button
