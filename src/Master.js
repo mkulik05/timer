@@ -73,7 +73,9 @@ export default class Master extends Component {
         }
       });
     }
+    if (this.state.key){
       return (
+
         <View style={styles.container}>
         <QRCode
         value={this.state.key}
@@ -89,6 +91,10 @@ export default class Master extends Component {
         </View>
 
       )
+    } else {
+      return (<Text>dfdfd</Text>)
+    }
+
 
   }
 }
