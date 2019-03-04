@@ -38,6 +38,7 @@ randomString  (length) {
   return "R"+text;
 }
 give_name=(adress)=>{
+  alert(this.state.Scanned_QR)
 
   firebase.database().ref('users/' + adress).once('value', (snapshot) => {
     if(snapshot && snapshot.val()){
@@ -69,7 +70,7 @@ give_name=(adress)=>{
       this.setState({
         name:name
       });
-      //  alert(name)
+       alert(this.state.name)
     } else {
       //alert(snapshot.val())
     }
@@ -90,7 +91,6 @@ give_name=(adress)=>{
     if (result.data !== this.state.Scanned_QR) {
       LayoutAnimation.spring();
       this.setState({ Scanned_QR: result.data });
-      alert(this.state.Scanned_QR)
       this.give_name(result.data)
     }
   };

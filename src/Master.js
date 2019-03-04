@@ -30,6 +30,8 @@ export default class Master extends Component {
   }
   constructor(props){
     super(props)
+  }
+  componentWillMount(){
     this.setState({
       key:this.randomString(5)
     })
