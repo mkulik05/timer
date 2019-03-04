@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import * as firebase from 'firebase'
 import { WebBrowser,Constants, Permissions,BarCodeScanner} from 'expo';
-export default class Slave extends Component{
+export default class Referee extends Component{
   constructor(props){
     super(props)
 this._requestCameraPermission()
@@ -27,7 +27,55 @@ state={
   player:null,
   hasCameraPermission: null,
   Scanned_QR: null,
+  name:null
 }
+randomString  (length) {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for(var i = 0; i < length; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return "R"+text;
+}
+give_name=(adress)=>{
+
+  firebase.database().ref('users/' + adress).once('value', (snapshot) => {
+    if(snapshot && snapshot.val()){
+      //snaphost.val().all_slaves[slave_1]
+      const referee_1 = snapshot.val().all_referees.referee_1;
+      const referee_2 = snapshot.val().all_referees.referee_2;
+      const referee_3 = snapshot.val().all_referees.referee_3;
+      var name = this.randomString(6)
+    //  alert(adress)
+      if (referee_1 === "null" ){
+        firebase.database().ref('users/'+adress+'/all_referees').update({
+          referee_1: name
+        });
+      } else {
+        if (referee_2 === "null"){
+          firebase.database().ref('users/'+adress+'/all_referees').update({
+            referee_2: name
+          });
+        } else {
+          if (referee_3 === "null"){
+            firebase.database().ref('users/'+adress+'/all_referees').update({
+              referee_3: name
+            });
+          } else{
+            alert("There are only 3 referees")
+          }
+        }
+      }
+      this.setState({
+        name:name
+      });
+      //  alert(name)
+    } else {
+      //alert(snapshot.val())
+    }
+  })
+}
+
   _requestCameraPermission = async () => {
 
 
@@ -35,13 +83,15 @@ state={
     this.setState({
       hasCameraPermission: status === 'granted',
     });
-    alert("You should scan QR code from child's telephone")
+    alert("You should scan QR")
   };
 
   _handleBarCodeRead = result => {
     if (result.data !== this.state.Scanned_QR) {
       LayoutAnimation.spring();
       this.setState({ Scanned_QR: result.data });
+      alert(this.state.Scanned_QR)
+      this.give_name(result.data)
     }
   };
   render() {
@@ -61,7 +111,7 @@ state={
           Camera permission is not granted
           </Text>
           : <BarCodeScanner
-          onBarCodeRead={this._handleBarCodeRead}
+          onBarCodeRead={(result) => {this._handleBarCodeRead(result)}}
           style={{
             height: Dimensions.get('window').height,
             width: Dimensions.get('window').width,
@@ -85,4 +135,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-export {Slave}
+export {Referee}

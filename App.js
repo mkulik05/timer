@@ -14,7 +14,7 @@ import {   Image,
   StatusBar
  } from 'react-native';
 import * as firebase from 'firebase'
-import Slave from './src/Slave'
+import Referee from './src/Referee'
 import Master from './src/Master'
 import { WebBrowser,Constants, Permissions} from 'expo';
 export default class Component extends React.Component {
@@ -35,35 +35,29 @@ export default class Component extends React.Component {
     competition:"belarus 228",
     team:null,
     player:null,
-    team_is_register:false,
-    is_connected_to_firebase: false,
+    if_slave:false,
+    is_choose: false,
   }
     componentWillMount(){
-  try{
-    firebase.database().ref('users/' + this.state.competition).once('value', (snapshot) => {
-      if(snapshot && snapshot.val()){
-        this.setState({
-          team_is_register:true,
-          is_connected_to_firebase:true
-        });
-
-      } else {
-        this.setState({
-          team_is_register:false,
-          is_connected_to_firebase:true
-        });
-      }
-    })
-  } catch(e){
-    //  alert("123s")
+}
+press(type){
+  if (type === "main"){
+    this.setState({
+       if_slave: false,
+       is_choose: true
+      });
+  } else {
+          this.setState({
+             if_slave: true,
+             is_choose: true
+            });
   }
 }
-
   render() {
-    if (this.state.is_connected_to_firebase){
-      if (this.state.team_is_register){
+    if (this.state.is_choose){
+      if (this.state.if_slave){
         return (
-          <Slave/>
+          <Referee/>
         )
       } else {
         return(
@@ -72,7 +66,20 @@ export default class Component extends React.Component {
       }
     } else {
       return (
-        <Text>Loading ...</Text>
+          <View style={styles.container}>
+          <Button
+          onPress={() => {this.press("main")}}
+          title="start tournament"
+          color="#841584"
+          accessibilityLabel="Learn more about this purple button"
+          />
+          <Button
+          onPress={() => {this.press()}}
+          title="join tournament"
+          color="#841584"
+          accessibilityLabel="Learn more about this purple button"
+          />
+          </View>
       )
     }
   }
