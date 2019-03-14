@@ -13,69 +13,71 @@ import {
   Dimensions,
   LayoutAnimation,
   StatusBar,
+  TextInput,
 } from 'react-native';
 import * as firebase from 'firebase'
 import { WebBrowser,Constants, Permissions,BarCodeScanner} from 'expo';
 export default class Referee extends Component{
   constructor(props){
     super(props)
-this._requestCameraPermission()
-}
-state={
-  competition:null,
-  team:null,
-  player:null,
-  hasCameraPermission: null,
-  Scanned_QR: null,
-  name:null
-}
-randomString  (length) {
-  var text = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for(var i = 0; i < length; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
+    this._requestCameraPermission()
   }
-  return "R"+text;
-}
-give_name=(adress)=>{
-  alert(this.state.Scanned_QR)
+  state={
+    text:"",
+    competition:null,
+    team:null,
+    player:null,
+    hasCameraPermission: null,
+    Scanned_QR: null,
+    name:null
+  }
+  randomString  (length) {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for(var i = 0; i < length; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return "R"+text;
+  }
+  give_name=(adress)=>{
+  //  alert(this.state.Scanned_QR)
 
-  firebase.database().ref('users/' + adress).once('value', (snapshot) => {
-    if(snapshot && snapshot.val()){
-      //snaphost.val().all_slaves[slave_1]
-      const referee_1 = snapshot.val().all_referees.referee_1;
-      const referee_2 = snapshot.val().all_referees.referee_2;
-      const referee_3 = snapshot.val().all_referees.referee_3;
-      var name = this.randomString(6)
-    //  alert(adress)
-      if (referee_1 === "null" ){
-        firebase.database().ref('users/'+adress+'/all_referees').update({
-          referee_1: name
-        });
-      } else {
-        if (referee_2 === "null"){
+    firebase.database().ref('users/' + adress).once('value', (snapshot) => {
+      if(snapshot && snapshot.val()){
+        //snaphost.val().all_slaves[slave_1]
+        const referee_1 = snapshot.val().all_referees.referee_1;
+        const referee_2 = snapshot.val().all_referees.referee_2;
+        const referee_3 = snapshot.val().all_referees.referee_3;
+        var name = this.randomString(6)
+        //  alert(adress)
+        if (referee_1 === "null" ){
           firebase.database().ref('users/'+adress+'/all_referees').update({
-            referee_2: name
+            referee_1: name
           });
         } else {
-          if (referee_3 === "null"){
+          if (referee_2 === "null"){
             firebase.database().ref('users/'+adress+'/all_referees').update({
-              referee_3: name
+              referee_2: name
             });
-          } else{
-            alert("There are only 3 referees")
+          } else {
+            if (referee_3 === "null"){
+              firebase.database().ref('users/'+adress+'/all_referees').update({
+                referee_3: name
+              });
+            } else{
+              alert("There are only 3 referees")
+            }
           }
         }
+        this.setState({
+          name:name
+        });
+        alert(this.state.name)
+      } else {
+        //alert(snapshot.val())
       }
-      this.setState({
-        name:name
-      });
-       alert(this.state.name)
-    } else {
-      //alert(snapshot.val())
-    }
-  })
-}
+    })
+  }
 
   _requestCameraPermission = async () => {
 
@@ -94,10 +96,28 @@ give_name=(adress)=>{
       this.give_name(result.data)
     }
   };
+  send (){
+    firebase.database().ref('users/' + this.state.Scanned_QR+"/all_referees"+"/"+this.state.name).update({
+      info:this.state.text
+    })
+  }
+
   render() {
     if (this.state.Scanned_QR){
       return (
-      <Text>{this.state.Scanned_QR}</Text>
+        <View style={{padding: 10}}>
+        <TextInput
+        style={{height: 40}}
+        placeholder="Write something"
+        onChangeText={(text) => this.setState({text})}
+        />
+        <Button
+        onPress={() => {this.send()}}
+        title="send to firebase"
+        color="#841584"
+        accessibilityLabel="Learn more about this purple button"
+        />
+        </View>
       )
 
     }else {
@@ -125,14 +145,14 @@ give_name=(adress)=>{
       }
     }
 
-}
+  }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-export {Referee}
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+  });
+  export {Referee}
